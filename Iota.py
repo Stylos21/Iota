@@ -12,7 +12,12 @@ class Agent:
         This is the agent of the digitized environment. The agent is supposed to try riding around the environment and minimize the amount of collisions while riding. First however, the agent has to train in the environment, and learn to minimize the collisions and go from point A to point B smoothly.
 
         Args:
+<<<<<<< HEAD
             name (str): This is the name for the agent and can be anything as long as it's a string. This is just for convenience when visualizing the progress of the agent after training.
+=======
+            name (str): This is the name for the agent and can be anything as long as it's a string. This is just for convenience when visualizing the progress of the agent after training. 
+
+>>>>>>> Added requirements.txt + formatting changes
         """
         self.board = board
         self.width = 50
@@ -25,6 +30,7 @@ class Agent:
         self.distances = []
         self.agent_position = {'x': 10, 'y': 600}
 
+<<<<<<< HEAD
         self.corners = [[self.agent_position['x'] + self.width, self.agent_position['y'], '1s'], [
             self.agent_position['x'] + self.width, self.agent_position['y'] + self.height, '11']]
         self.line_pos = [self.show_distances(p) for p in self.corners]
@@ -65,13 +71,22 @@ class Agent:
 
 
 
+            return new_pos
+
+    def get_distances(self, corners, line_pos):
+        return sqrt((self.line_pos[0][0] - self.corners[0][0])**2 + (self.line_pos[0][1] - self.corners[0][1]))
+
 
 class Obstacle:
     instances = []
 
     def __init__(self, x, y, width, height, color, name):
+<<<<<<< HEAD
         """
         This is the obstacle class. This class is here so that it's easier to create obstacles of the environment and position them given the size and position attributes as opposed to just hard-coding and drawing them in pygame. In the future, I plan to allow the user to make a couple modifications by a simple sequence of clicks.
+=======
+        """This is the obstacle class. This class is here so that it's easier to create obstacles of the environment and position them given the size and position attributes as opposed to just hard-coding and drawing them in pygame. In the future, I plan to allow the user to make a couple modifications by a simple sequence of clicks. 
+>>>>>>> Added requirements.txt + formatting changes
 
         Args:
             width (int): Specifies the width of the object
@@ -89,10 +104,15 @@ class Obstacle:
 
 
 class Iota(gym.Env):
+<<<<<<< HEAD
     metadata = {'render.modes': ['console']}
     def __init__(self):
         """
         This is the environment. This environment is a custom Gym environment. A standard gym environment has threee methods: render, reset, and step. The render method is to update the environment with new positions of objects. Step is to update the agent's position given the action it predicted. Finally, reset is a method that is called when the agent reaches the terminal state. In other words, it resets the agent's position to it's default position and then restarts the training process. The only terminal state of the agent is when the agent collides with another object or at the environment's endpoints.
+=======
+    def __init__(self):
+        """This is the environment. This environment is a custom Gym environment. A standard gym environment has threee methods: render, reset, and step. The render method is to update the environment with new positions of objects. Step is to update the agent's position given the action it predicted. Finally, reset is a method that is called when the agent reaches the terminal state. In other words, it resets the agent's position to it's default position and then restarts the training process. The only terminal state of the agent is when the agent collides with another object or at the environment's endpoints.
+>>>>>>> Added requirements.txt + formatting changes
         """
 
         self.action_space = gym.spaces.Discrete(4)
@@ -105,6 +125,7 @@ class Iota(gym.Env):
                             400, 250, (255, 255, 255), "Bed")
         self.table = Obstacle(0, 0, 450, 200, (255, 255, 255), "Table")
         self.agent = Agent("Iota", self.board)
+<<<<<<< HEAD
         hasFinished = False
         # obs = self.reset()
         # while not hasFinished:
@@ -117,6 +138,21 @@ class Iota(gym.Env):
         #     self.render()
 
     def render(self, mode='human', close=False):
+=======
+        self.agent.agent_position['x'] = 10
+        self.agent.agent_position['y'] = ENV_HEIGHT / 3 + self.bed.height + 100
+        self.corners = [[self.agent.agent_position['x'] + self.agent.width, self.agent.agent_position['y'], '1s'], [
+            self.agent.agent_position['x'] + self.agent.width, self.agent.agent_position['y'] + self.agent.height, '11']]
+        self.line_pos = [self.agent.show_distances(p) for p in self.corners]
+        hasFinished = False
+        while not hasFinished:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    hasFinished = True
+            self.render()
+
+    def render(self, mode='human'):
+>>>>>>> Added requirements.txt + formatting changes
         self.board.fill((0, 0, 0))
         pygame.draw.rect(self.board, self.bed.color, [
                          self.bed.x, self.bed.y, self.bed.width, self.bed.height])
@@ -124,15 +160,22 @@ class Iota(gym.Env):
                          self.table.x, self.table.y, self.table.width, self.table.height])
         pygame.draw.rect(self.board, (255, 255, 255), [
                          self.agent.agent_position["x"], self.agent.agent_position["y"], self.agent.width, self.agent.height])
+<<<<<<< HEAD
         for i, pos in enumerate(self.agent.line_pos):
             pygame.draw.line(self.board, (255, 255, 255),
                              (self.agent.corners[i][0], self.agent.corners[i][1]), (pos[0], pos[1]))
 
         
+=======
+        for i, pos in enumerate(self.line_pos):
+            pygame.draw.line(self.board, (255, 255, 255),
+                             (self.corners[i][0], self.corners[i][1]), (pos[0], pos[1]))
+>>>>>>> Added requirements.txt + formatting changes
 
         pygame.display.update()
 
     def reset(self):
+<<<<<<< HEAD
 
         self.agent.agent_position['x'] = 10
         self.agent.agent_position['y'] = ENV_HEIGHT / 3 + self.bed.height + 100
@@ -140,10 +183,19 @@ class Iota(gym.Env):
             self.agent.agent_position['x'] + self.agent.width, self.agent.agent_position['y'] + self.agent.height, '11']]
         self.line_pos = [self.agent.show_distances(p) for p in self.corners]
         dist1, dist2 = self.agent.return_distances(self.corners, self.line_pos)
+=======
+        self.agent.position['x'] = 10
+        self.agent_position['y'] = ENV_HEIGHT / 3 + self.bed.height + 100
+        self.corners = [[self.agent.agent_position['x'] + self.agent.width, self.agent.agent_position['y'], '1s'], [
+            self.agent.agent_position['x'] + self.agent.width, self.agent.agent_position['y'] + self.agent.height, '11']]
+        self.line_pos = [self.agent.show_distances(p) for p in self.corners]
+        dist1, dist2 = self.agent.get_distances(self.corners, self.line_pos)
+>>>>>>> Added requirements.txt + formatting changes
         self.render()
         return np.array([dist1, dist2])
 
     def step(self, action):
+<<<<<<< HEAD
         print(action)
         """
         array[4] = [0, 0, 0, 0]
@@ -280,3 +332,6 @@ class Iota(gym.Env):
             self.line_pos = [self.agent.show_distances(
                     p) for p in self.corners] 
 
+=======
+        pass
+>>>>>>> Added requirements.txt + formatting changes

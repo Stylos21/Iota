@@ -1,4 +1,5 @@
 from Iota import Iota
+<<<<<<< HEAD
 from stable_baselines import DQN
 from stable_baselines.deepq.policies import MlpPolicy 
 import json
@@ -21,3 +22,7 @@ with open('rewardLogs.json', 'w') as f:
 # model.load('pp')
     
 
+=======
+
+env = Iota()
+>>>>>>> Added requirements.txt + formatting changes
