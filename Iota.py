@@ -12,12 +12,7 @@ class Agent:
         This is the agent of the digitized environment. The agent is supposed to try riding around the environment and minimize the amount of collisions while riding. First however, the agent has to train in the environment, and learn to minimize the collisions and go from point A to point B smoothly.
 
         Args:
-<<<<<<< HEAD
             name (str): This is the name for the agent and can be anything as long as it's a string. This is just for convenience when visualizing the progress of the agent after training.
-=======
-            name (str): This is the name for the agent and can be anything as long as it's a string. This is just for convenience when visualizing the progress of the agent after training. 
-
->>>>>>> Added requirements.txt + formatting changes
         """
         self.board = board
         self.width = 50
@@ -30,7 +25,6 @@ class Agent:
         self.distances = []
         self.agent_position = {'x': 10, 'y': 600}
 
-<<<<<<< HEAD
         self.corners = [[self.agent_position['x'] + self.width, self.agent_position['y'], '1s'], [
             self.agent_position['x'] + self.width, self.agent_position['y'] + self.height, '11']]
         self.line_pos = [self.show_distances(p) for p in self.corners]
@@ -69,10 +63,6 @@ class Agent:
     def return_distances(self, corners, end_line_pos):
         return sqrt((self.line_pos[0][0] - self.corners[0][0])**2 + (self.line_pos[0][1] - self.corners[0][1])), sqrt((self.line_pos[1][0] - self.corners[1][0])**2 + (self.line_pos[1][1] - self.corners[1][1])**2)
 
-
-
-            return new_pos
-
     def get_distances(self, corners, line_pos):
         return sqrt((self.line_pos[0][0] - self.corners[0][0])**2 + (self.line_pos[0][1] - self.corners[0][1]))
 
@@ -81,12 +71,9 @@ class Obstacle:
     instances = []
 
     def __init__(self, x, y, width, height, color, name):
-<<<<<<< HEAD
         """
         This is the obstacle class. This class is here so that it's easier to create obstacles of the environment and position them given the size and position attributes as opposed to just hard-coding and drawing them in pygame. In the future, I plan to allow the user to make a couple modifications by a simple sequence of clicks.
-=======
-        """This is the obstacle class. This class is here so that it's easier to create obstacles of the environment and position them given the size and position attributes as opposed to just hard-coding and drawing them in pygame. In the future, I plan to allow the user to make a couple modifications by a simple sequence of clicks. 
->>>>>>> Added requirements.txt + formatting changes
+
 
         Args:
             width (int): Specifies the width of the object
