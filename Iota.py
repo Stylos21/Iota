@@ -92,7 +92,7 @@ class Obstacle:
 class Iota(gym.Env):
     metadata = {'render.modes': ['console']}
 
-    def __init__(self, model):
+    def __init__(self):
         """
         This is the environment. This environment is a custom Gym environment. A standard gym environment has threee methods: render, reset, and step. The render method is to update the environment with new positions of objects. Step is to update the agent's position given the action it predicted. Finally, reset is a method that is called when the agent reaches the terminal state. In other words, it resets the agent's position to it's default position and then restarts the training process. The only terminal state of the agent is when the agent collides with another object or at the environment's endpoints.
 
@@ -109,15 +109,15 @@ class Iota(gym.Env):
         self.table = Obstacle(0, 0, 450, 200, (255, 255, 255), "Table")
         self.agent = Agent("Iota", self.board)
         hasFinished = False
-        obs = self.reset()
-        while not hasFinished:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    hasFinished = True
-            action, states = model.predict(obs)
-            obs, rewards, dones, info = self.step(action)
-            print(obs, self.agent.angle)
-            self.render()
+        # obs = self.reset()
+        # while not hasFinished:
+        #     for event in pygame.event.get():
+        #         if event.type == pygame.QUIT:
+        #             hasFinished = True
+        #     action, states = model.predict(obs)
+        #     obs, rewards, dones, info = self.step(action)
+        #     print(obs, self.agent.angle)
+        #     self.render()
 
     def render(self, mode='human', close=False):
 
