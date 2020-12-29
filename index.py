@@ -4,8 +4,8 @@ from stable_baselines.deepq.policies import MlpPolicy
 import json
 model = DQN.load('DQN')
 env = Iota(model)
-# model = DQN(MlpPolicy, env, verbose=1).learn(total_timesteps=5000)
-model.save('DQN')
+model = DQN(MlpPolicy, env, verbose=1).learn(total_timesteps=10000)
+# model.save('DQN')
 
 # with open('agentDirectionHistory.json', 'w') as f:
 #     f.write(json.dumps(env.agent.direction_history))
