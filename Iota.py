@@ -30,8 +30,11 @@ class Agent:
         self.angle = 90
 
     def show_distances(self, pos):
-        new_pos = pos[:]
+        
+        sums = []
         for obstacle in Obstacle.instances:
+            # print(obstacle.name, [obstacle.x, obstacle.y])
+            new_pos = pos[:]
             while 0 < new_pos[0] < ENV_WIDTH and 0 < new_pos[1] < ENV_HEIGHT and not (new_pos[0] in range(int(obstacle.x), int(obstacle.x + obstacle.width)) and new_pos[1] in range(int(obstacle.y), int(obstacle.y + obstacle.height))):
                 operation = new_pos[2]
                 for i, j in enumerate(operation):
@@ -39,14 +42,18 @@ class Agent:
                         new_pos[i] += 1
                     elif j == 's':
                         new_pos[i] -= 1
-            return new_pos
+            sums.append(new_pos)
+        s = [sum(i[:2]) for i in sums]
+        return sums[s.index(min(s))]
 
     def check_collision(self):
         distances = self.return_distances(self.corners, self.line_pos)
         left = distances[0]
         right = distances[1]
+        collisionDetected = False
         for obstacle in Obstacle.instances:
-            if left < 2 or right < 2:
+            print(self.agent_position, obstacle.x, obstacle.x + obstacle.width, obstacle.y, obstacle.y + obstacle.height)
+            if (self.agent_position['x'] in range(int(obstacle.x), int(obstacle.x + obstacle.width)) and self.agent_position['y'] in range(int(obstacle.y), int(obstacle.y + obstacle.height))) or self.agent_position['x'] < 0 or self.agent_position['y'] < 0 or self.agent_position['x'] > 750 or self.agent_position['y'] > 750:
                 self.collisions.append({
                     'didCollide': True,
                     'distanceFromObject': left if left < 2 and right > 2 else right if right < 2 and left > 2 else min(left, right),
@@ -54,10 +61,10 @@ class Agent:
                     'width': obstacle.width,
                     'height': obstacle.height
                 })
-                return True
-            else:
-                return False
 
+                collisionDetected = True
+        return collisionDetected
+        
     def return_distances(self, corners, end_line_pos):
         return sqrt((self.line_pos[0][0] - self.corners[0][0])**2 + (self.line_pos[0][1] - self.corners[0][1])), sqrt((self.line_pos[1][0] - self.corners[1][0])**2 + (self.line_pos[1][1] - self.corners[1][1])**2)
 
@@ -105,16 +112,16 @@ class Iota(gym.Env):
         self.table = Obstacle(0, 0, 450, 200, (255, 255, 255), "Table")
         self.agent = Agent("Iota", self.board)
         hasFinished = False
-        self.model = model
+
         obs = self.reset()
-        while not hasFinished:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    hasFinished = True
-            action, states = model.predict(obs)
-            obs, rewards, dones, info = self.step(action)
-            print(obs, self.agent.angle)
-            self.render()
+        # while not hasFinished:
+        #     for event in pygame.event.get():
+        #         if event.type == pygame.QUIT:
+        #             hasFinished = True
+        #     action, states = model.predict(obs)
+        #     obs, rewards, dones, info = self.step(action)
+        #     print(obs, self.agent.angle)
+        #     self.render()
 
     def render(self, mode='human', close=False):
 
@@ -144,7 +151,7 @@ class Iota(gym.Env):
         return np.array([dist1, dist2])
 
     def step(self, action):
-        print(action)
+        # print(action)
         """
         array[4] = [0, 0, 0, 0]
         array[0] = forward
