@@ -43,7 +43,7 @@ class Agent:
                     elif j == 's':
                         new_pos[i] -= 1
             sums.append(new_pos)
-        s = [sum(i[:2]) for i in sums]
+        s = self.return_distances(self.corners, sums)
         return sums[s.index(min(s))]
 
     def check_collision(self):
@@ -52,8 +52,8 @@ class Agent:
         right = distances[1]
         collisionDetected = False
         for obstacle in Obstacle.instances:
-            print(self.agent_position, obstacle.x, obstacle.x + obstacle.width, obstacle.y, obstacle.y + obstacle.height)
             if (self.agent_position['x'] in range(int(obstacle.x), int(obstacle.x + obstacle.width)) and self.agent_position['y'] in range(int(obstacle.y), int(obstacle.y + obstacle.height))) or self.agent_position['x'] < 0 or self.agent_position['y'] < 0 or self.agent_position['x'] > 750 or self.agent_position['y'] > 750:
+                print("** COLLISION DETECTED **")
                 self.collisions.append({
                     'didCollide': True,
                     'distanceFromObject': left if left < 2 and right > 2 else right if right < 2 and left > 2 else min(left, right),
@@ -66,12 +66,7 @@ class Agent:
         return collisionDetected
         
     def return_distances(self, corners, end_line_pos):
-        return sqrt((self.line_pos[0][0] - self.corners[0][0])**2 + (self.line_pos[0][1] - self.corners[0][1])), sqrt((self.line_pos[1][0] - self.corners[1][0])**2 + (self.line_pos[1][1] - self.corners[1][1])**2)
-
-    def get_distances(self, corners, line_pos):
-        return sqrt((self.line_pos[0][0] - self.corners[0][0])**2 + (self.line_pos[0][1] - self.corners[0][1]))
-
-
+        return sqrt(abs(end_line_pos[0][0] - corners[0][0])**2 + abs(end_line_pos[0][1] - corners[0][1])), sqrt(abs(end_line_pos[1][0] - corners[1][0])**2 + abs(end_line_pos[1][1] - corners[1][1])**2)
 class Obstacle:
     instances = []
 
@@ -114,14 +109,15 @@ class Iota(gym.Env):
         hasFinished = False
 
         obs = self.reset()
-        # while not hasFinished:
-        #     for event in pygame.event.get():
-        #         if event.type == pygame.QUIT:
-        #             hasFinished = True
-        #     action, states = model.predict(obs)
-        #     obs, rewards, dones, info = self.step(action)
-        #     print(obs, self.agent.angle)
-        #     self.render()
+        while not hasFinished:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    hasFinished = True
+            action, states = model.predict(obs)
+            print(action)
+            obs, rewards, dones, info = self.step(action)
+            print(obs, self.agent.angle)
+            self.render()
 
     def render(self, mode='human', close=False):
 
@@ -171,7 +167,7 @@ class Iota(gym.Env):
         if action == 1:
             self.agent.angle -= 90
             if self.agent.angle < 0:
-                self.agent.angle = 360
+                self.agent.angle = 0
             self.agent.direction_history.append('left')
             self.reset_raycasts(self.agent.angle)
             self.render()
@@ -181,12 +177,8 @@ class Iota(gym.Env):
                 reward -= 5
 
         elif action == 2:
-            if self.agent.angle == 360: 
-                self.agent.angle = 0
-            else: self.agent.angle += 90
-
             self.agent.angle += 90
-            if self.agent.angle > 360:
+            if self.agent.angle >= 360:
                 self.agent.angle = 0
 
             self.reset_raycasts(self.agent.angle)
@@ -199,7 +191,8 @@ class Iota(gym.Env):
 
         elif action == 0:
             self.agent.direction_history.append('forward')
-            if self.agent.angle == 0:
+            if self.agent.angle >= 360: self.agent.angle == 0
+            if self.agent.angle == 0 or self.agent.angle == 360:
                 self.agent.agent_position['y'] -= 10
                 self.reset_raycasts(self.agent.angle)
             elif self.agent.angle == 90: 
@@ -215,13 +208,9 @@ class Iota(gym.Env):
             if left + right >= 50:
                 reward += 5
 
-            elif self.agent.check_collision():
-                reward -= 10
-                self.reset() 
-
             self.render()
 
-        elif action == 1:
+        elif action == 3:
             self.agent.direction_history.append('reverse')
             if self.agent.angle == 0:
                 self.agent.agent_position['y'] += 10
@@ -243,26 +232,32 @@ class Iota(gym.Env):
             if left + right <= 50:
                 reward += 5
 
-            elif self.agent.check_collision():
-                reward -= 10
-                self.reset() 
+            
             else:
                 reward -= 5
 
-            self.agent.rewards.append({
+        if "forward" not in self.agent.direction_history[len(self.agent.direction_history)-6:len(self.agent.direction_history)-1]:
+            reward -= 10
+
+            
+        info = {}
+        if self.agent.check_collision():
+            reward -= 10
+            self.reset() 
+        self.agent.rewards.append({
                 'leftDistance': left,
                 'rightDistance': right,
                 'reward': reward,
             })
-        info = {}
         self.render()
+        print(f"REWARD: {reward}")
             # self.render()
             # print(self.agent.direction_history[-1])
         self.agent.rewards.append(reward)
         return np.array([left, right]), reward, False, info
 
     def reset_raycasts(self, angle_of_agent):
-        if angle_of_agent == 0:
+        if angle_of_agent == 0 or angle_of_agent == 360:
             if self.agent.width > self.agent.height:
                 self.agent.width, self.agent.height = self.agent.height, self.agent.width
             self.agent.corners = [[self.agent.agent_position['x'], self.agent.agent_position['y'], 'ss'], [
